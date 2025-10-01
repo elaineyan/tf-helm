@@ -1,5 +1,6 @@
 # tf-helm
 
+
 Minimal GitHub Actions template to achieve:
 1. Terraform plan → Results automatically posted as PR comments
 2. Helm test (chart syntax + unit tests) → Results similarly posted as comments
@@ -12,20 +13,21 @@ Settings → Environments → New environment → enter 'prod' → Configure env
 ② Add reviewers
 Required reviewers → Add 1 user or team → Save protection rules
 ③ add job as below to run terraform apply
-...
-terraform-apply:               
-  needs: terraform-plan         
-  runs-on: ubuntu-latest
-  environment: prod             
-  steps:
-    - uses: actions/checkout@v4
-    - uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: ${{ env.TF_VERSION }}
 
-    - name: Terraform Init
-      run: terraform init
+    terraform-apply:               
+      needs: terraform-plan         
+      runs-on: ubuntu-latest
+      environment: prod             
+      steps:
+        - uses: actions/checkout@v4
+        
+        - uses: hashicorp/setup-terraform@v3
+          with:
+            terraform_version: ${{ env.TF_VERSION }}
+    
+        - name: Terraform Init
+          run: terraform init
+    
+        - name: Terraform Apply
+          run: terraform apply -auto-approve
 
-    - name: Terraform Apply
-      run: terraform apply -auto-approve
-...
