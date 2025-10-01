@@ -65,7 +65,7 @@ jobs:
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              commit_sha: sha,
+              commit_sha: context.sha,
               body: output
             });
 
@@ -102,6 +102,6 @@ jobs:
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              commit_sha: sha,
+              commit_sha: context.sha,
               body: helmBody
             });
