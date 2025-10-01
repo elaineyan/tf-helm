@@ -1,0 +1,9 @@
+suite: test-connection
+templates:
+  - deployment.yaml
+tests:
+  - it: should expose port 5000
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 5000
