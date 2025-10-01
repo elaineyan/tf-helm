@@ -56,17 +56,19 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const output = `### Terraform Plan 📖\`\`\`diff
+            const sha = context.sha;
+            const body = `### Terraform Plan 📖
+            \`\`\`diff
             ${{ steps.plan.outputs.stdout }}
             \`\`\`
-            **Format**: \`${{ steps.fmt.outcome }}\`
-            **Plan**: \`${{ steps.plan.outcome }}\`
+            **Format**: ${{ steps.fmt.outcome }}
+            **Plan**: ${{ steps.plan.outcome }}
             `;
-            await github.rest.issues.createComment({
+            await github.rest.repos.createCommitComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              commit_sha: context.sha,
-              body: output
+              commit_sha: sha,
+              body: body
             });
 
   helm-test:
@@ -93,15 +95,17 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require('fs');
-            const lint = `${{ steps.lint.outcome }}`;
-            const helmBody = `### Helm Test 🔧
-            - **lint**: ${lint}
-            - unittest: generated test-results.xml（could be downloaded from Actions Artifacts）
+            const sha = context.sha;
+            const body = `### Terraform Plan 📖
+            \`\`\`diff
+            ${{ steps.plan.outputs.stdout }}
+            \`\`\`
+            **Format**: ${{ steps.fmt.outcome }}
+            **Plan**: ${{ steps.plan.outcome }}
             `;
-            await github.rest.issues.createComment({
+            await github.rest.repos.createCommitComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              commit_sha: context.sha,
-              body: helmBody
+              commit_sha: sha,
+              body: body
             });
