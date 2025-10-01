@@ -53,9 +53,9 @@ jobs:
       - name: Comment PR - Terraform
         uses: actions/github-script@v7
         id: tf-comment
-        with: 
+        with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          scripts: |
+          script: |
             const output = `### Terraform Plan 📖\`\`\`diff
             ${{ steps.plan.outputs.stdout }}
             \`\`\`
@@ -86,7 +86,7 @@ jobs:
       - name: Helm unit Test (helm-unittest)
         run: |
           helm plugin  install https://github.com/helm-unittest/helm-unittest.git
-          hem unittest charts/tf-helm --output-type junit --output-file test-results.xml
+          helm unittest charts/tf-helm --output-type junit --output-file test-results.xml
 
       - name: Comment PR - Helm 
         uses: actions/github-script@v7
