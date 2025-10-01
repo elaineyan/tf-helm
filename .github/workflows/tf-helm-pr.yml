@@ -4,6 +4,8 @@ name: TF-Plan-Helm-Test
 
 # Controls when the workflow will run
 on:
+  push:
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
