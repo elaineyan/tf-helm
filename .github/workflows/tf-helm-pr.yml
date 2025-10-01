@@ -60,35 +60,23 @@ jobs:
         working-directory: terraform
         continue-on-error: true
 
-      - name: Output to Job Summary
-        if: always()
-        run: |
-          echo "### Terraform Plan 📖" >> $GITHUB_STEP_SUMMARY
-          echo '```diff' >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.plan.outputs.stdout }}" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "**Format**: ${{ steps.fmt.outcome }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Plan**: ${{ steps.plan.outcome }}" >> $GITHUB_STEP_SUMMARY
-
       - name: Comment PR - Terraform
         uses: actions/github-script@v7
         id: tf-comment
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const sha = context.sha;
-            const body = `### Terraform Plan 📖
-            \`\`\`diff
+            const output = `### Terraform Plan 📖\`\`\`diff
             ${{ steps.plan.outputs.stdout }}
             \`\`\`
-            **Format**: ${{ steps.fmt.outcome }}
-            **Plan**: ${{ steps.plan.outcome }}
+            **Format**: \`${{ steps.fmt.outcome }}\`
+            **Plan**: \`${{ steps.plan.outcome }}\`
             `;
-            await github.rest.repos.createCommitComment({
+            github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              commit_sha: sha,
-              body: body
+              issue_number: context.payload.pull_request.number,
+              body: output
             });
 
   helm-test:
@@ -110,32 +98,20 @@ jobs:
           helm plugin  install https://github.com/helm-unittest/helm-unittest.git
           helm unittest charts/tf-helm --output-type junit --output-file test-results.xml
 
-      - name: Output to Job Summary
-        if: always()
-        run: |
-          echo "### Terraform Plan 📖" >> $GITHUB_STEP_SUMMARY
-          echo '```diff' >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.plan.outputs.stdout }}" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo **lint**: ${lint} >> $GITHUB_STEP_SUMMARY
-          echo unittest: generated test-results.xml which could be downloaded from Actions Artifacts >> $GITHUB_STEP_SUMMARY
-
       - name: Comment PR - Helm 
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const sha = context.sha;
-            const body = `### Terraform Plan 📖
-            \`\`\`diff
-            ${{ steps.plan.outputs.stdout }}
-            \`\`\`
-            - **lint**: ${lint} 
-            - unittest: generated test-results.xml which could be downloaded from Actions Artifacts
+            const fs = require('fs');
+            const lint = `${{ steps.lint.outcome }}`;
+            const helmBody = `### Helm Test 🔧
+            - **lint**: ${lint}
+            - unittest: generated test-results.xml which could be downloaded from Actions Artifacts.
             `;
-            await github.rest.repos.createCommitComment({
+            github.rest.issues.createComment({
+              issue_number: context.payload.pull_request.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              commit_sha: sha,
-              body: body
+              body: helmBody
             });
