@@ -62,8 +62,8 @@ jobs:
             **Format**: \`${{ steps.fmt.outcome }}\`
             **Plan**: \`${{ steps.plan.outcome }}\`
             `;
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
+            await github.rest.issues.createComment({
+              issue_number: context.payload.pull_request.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: output
@@ -99,8 +99,8 @@ jobs:
             - **lint**: ${lint}
             - unittest: generated test-results.xml（could be downloaded from Actions Artifacts）
             `;
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
+            await github.rest.issues.createComment({
+              issue_number: context.payload.pull_request.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: helmBody
