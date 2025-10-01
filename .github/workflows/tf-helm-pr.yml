@@ -107,7 +107,7 @@ jobs:
             const lint = `${{ steps.lint.outcome }}`;
             const helmBody = `### Helm Test 🔧
             - **lint**: ${lint}
-            - unittest: 已生成 test-results.xml（可在 Actions Artifacts 下载）
+            - unittest: generated test-results.xml which could be downloaded from Actions Artifacts.
             `;
             github.rest.issues.createComment({
               issue_number: context.payload.pull_request.number,
